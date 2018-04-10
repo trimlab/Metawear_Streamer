@@ -1,0 +1,2 @@
+MainPackage=C:\Users\EricMVasey\source\repos\Metawear_ICAD\Metawear_ICAD\bin\x64\Debug\Metawear_ICAD_1.0.0.0_x64_Debug.appx
+SymbolPackage=C:\Users\EricMVasey\source\repos\Metawear_ICAD\Metawear_ICAD\AppPackages\Metawear_ICAD_1.0.0.0_Debug_Test\Metawear_ICAD_1.0.0.0_x64_Debug.appxsym
