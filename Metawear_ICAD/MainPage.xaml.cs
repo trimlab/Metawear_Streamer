@@ -21,6 +21,10 @@ using Windows.ApplicationModel;
 using MbientLab.MetaWear.Peripheral;
 using MbientLab.MetaWear.Sensor;
 using MbientLab.MetaWear.Data;
+using System.Threading.Tasks;
+using Windows.Networking;
+using Windows.Networking.Sockets;
+using Windows.Networking.Connectivity;
 
 namespace Metawear_ICAD
 {
@@ -37,10 +41,40 @@ namespace Metawear_ICAD
         private BluetoothLEDevice device;
         private MbientLab.MetaWear.IMetaWearBoard board;
         private List<MetawearSensor> sensors = new List<MetawearSensor>();
+        private OSC osc;
 
         public MainPage()
         {
             this.InitializeComponent();
+
+            osc = new OSC();
+            osc.outPort = 10000;
+
+            foreach (HostName localHostName in NetworkInformation.GetHostNames())
+            {
+                if (localHostName.IPInformation != null)
+                {
+                    if (localHostName.Type == HostNameType.Ipv4)
+                    {
+                        oscIP.Text = localHostName.ToString();
+                        break;
+                    }
+                }
+            }
+
+            osc.outIP = oscIP.Text;
+            osc.Close();
+            osc.Awake();
+
+            for (int i = 0; i < 10; i++)
+            {
+                OscMessage msg = new OscMessage();
+                msg.address = "/test";
+                msg.values.Add("test");
+
+                osc.Send(msg);
+            }
+
             Scan();
         }
 
@@ -61,6 +95,30 @@ namespace Metawear_ICAD
             }
         }
 
+        private void oscIP_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox oscIP = (TextBox) sender;
+
+            osc.outPort = 10000;
+
+            System.Net.IPAddress temp;
+
+            if (oscIP.Text.Split('.').Length == 4 && System.Net.IPAddress.TryParse(oscIP.Text, out temp))
+            {
+                osc.outIP = oscIP.Text;
+                osc.Close();
+                osc.Awake();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    OscMessage msg = new OscMessage();
+                    msg.address = "/test";
+                    msg.values.Add("test");
+
+                    osc.Send(msg);
+                }
+            }
+        }
 
         private async void Connect(object sender, RoutedEventArgs args)
         {
@@ -96,6 +154,7 @@ namespace Metawear_ICAD
             await gyro.PackedAngularVelocity.AddRouteAsync(source => source.Stream(async data => await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
                 gyroData.Text = data.Value<AngularVelocity>().ToString();
+
             })));
 
             IMagnetometerBmm150 magnetometer = board.GetModule<IMagnetometerBmm150>();

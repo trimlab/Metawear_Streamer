@@ -37,7 +37,7 @@
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0, 15, 0, 0">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="OSC Destination:" />
-                <TextBox Name="oscIP" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="31,0,0,0" />
+                <TextBox Name="oscIP" TextChanged="oscIP_TextChanged" Width="250" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="31,0,0,0" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="200, 100, 0, 0">
