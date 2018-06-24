@@ -41,14 +41,13 @@ namespace Metawear_ICAD
         private BluetoothLEDevice device;
         private MbientLab.MetaWear.IMetaWearBoard board;
         private List<MetawearSensor> sensors = new List<MetawearSensor>();
-        private OSC osc;
+        private SharpOSC.UDPSender osc;
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            osc = new OSC();
-            osc.outPort = 10000;
+            osc = new SharpOSC.UDPSender("127.0.0.1", 5000);
 
             foreach (HostName localHostName in NetworkInformation.GetHostNames())
             {
@@ -62,18 +61,8 @@ namespace Metawear_ICAD
                 }
             }
 
-            osc.outIP = oscIP.Text;
-            osc.Close();
-            osc.Awake();
-
-            for (int i = 0; i < 10; i++)
-            {
-                OscMessage msg = new OscMessage();
-                msg.address = "/test";
-                msg.values.Add("test");
-
-                osc.Send(msg);
-            }
+            SharpOSC.OscMessage msg = new SharpOSC.OscMessage("/test", "test");
+            osc.Send(msg);
 
             Scan();
         }
@@ -99,22 +88,15 @@ namespace Metawear_ICAD
         {
             TextBox oscIP = (TextBox) sender;
 
-            osc.outPort = 10000;
-
             System.Net.IPAddress temp;
 
             if (oscIP.Text.Split('.').Length == 4 && System.Net.IPAddress.TryParse(oscIP.Text, out temp))
             {
-                osc.outIP = oscIP.Text;
-                osc.Close();
-                osc.Awake();
+                osc = new SharpOSC.UDPSender("127.0.0.1", 10000);
 
                 for (int i = 0; i < 10; i++)
                 {
-                    OscMessage msg = new OscMessage();
-                    msg.address = "/test";
-                    msg.values.Add("test");
-
+                    SharpOSC.OscMessage msg = new SharpOSC.OscMessage("/test", "test");
                     osc.Send(msg);
                 }
             }
